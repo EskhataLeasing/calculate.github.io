@@ -212,6 +212,11 @@ tbody tr:nth-child(even){background:#fafafa}
 <input type="text" id="price" value=""></div>
 </div>
 
+<div class="summary-item">
+  <div class="summary-label">Flat rate</div>
+  <div class="summary-value" id="outFlat">0.00%</div>
+</div>
+
 <div class="input-group">
 <label data-i18n="advance">Аванс (%)</label>
 <div class="percentage-input">
@@ -458,6 +463,14 @@ tbl.innerHTML+=`<tr>
 </tr>`;
 });
 
+let flatRate = 0;
+
+if (!type.value.includes('inst')) { // не рассрочка
+  if (lease > 0 && T > 0) {
+    flatRate = over / (lease * (T / 12));
+  }
+}
+
 outLease.textContent=f(lease);
 outAdvance.textContent=f(adv);
 outOver.textContent=f(over);
@@ -468,6 +481,7 @@ outMarginPct.textContent=(MARGIN_RATE*100).toFixed(2).replace('.',',')+'%';
 outIns.textContent = f(insurance);
 outInsPct.textContent = (insRate * 100).toFixed(2).replace('.', ',') + '%';
 outObject.textContent = objectName.value || "—";
+outFlat.textContent = (flatRate * 100).toFixed(2).replace('.', ',') + '%';
 
 
 }
