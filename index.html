@@ -181,7 +181,9 @@ tbody tr:nth-child(even){background:#fafafa}
 <div class="summary-item"><div class="summary-label" data-i18n="adv">Аванс</div><div class="summary-value" id="outAdvance">0</div></div>
 <div class="summary-item"><div class="summary-label" data-i18n="over">Процент лизинговой компании</div><div class="summary-value" id="outOver">0</div></div>
 <div class="summary-item"><div class="summary-label" data-i18n="total">Общая сумма оплаты</div><div class="summary-value" id="outTotal">0</div></div>
-<div class="summary-item">
+<div class="summary-item"><div class="summary-label" data-i18n="full">Полная стоимость объекта</div><div class="summary-value" id="outFull">0</div></div>
+
+  <div class="summary-item">
   <div class="summary-label" data-i18n="margin">Единоразовая маржа</div>
   <div class="summary-value" id="outMargin">0</div>
   <div class="summary-sub" id="outMarginPct"></div>
@@ -222,12 +224,12 @@ const MARGIN_RATE=0.030;
 
 const i18n={
 ru:{title:"Калькулятор",price:"Стоимость объекта",advance:"Аванс (%)",term:"Срок (мес.)",
-type:"Тип графика",calc:"Рассчитать",client:"Режим для клиента",pdf:"PDF / Печать",
+type:"Тип графика",calc:"Рассчитать",full: "Полная стоимость объекта", client:"Режим для клиента",pdf:"PDF / Печать",
 lease:"Долг лизинга",adv:"Аванс",over:"Переплата",total:"Общая сумма оплаты",margin:"Единоразовая маржа",ins:"Страхование",
 m:"Месяц",p:"Общая сумма оплаты",pr:"Оплата основного долга",i:"Маржа",b:"Остаток",
 t_annuity:"Аннуитет",t_annuity_q:"Аннуитет (квартальный)",t_decl2:"Убывающий 2x",t_decl3:"Убывающий 3x",
 t_linear:"Линейный (квартальный)",t_inst_m:"Рассрочка ежемесячная",t_inst_q:"Рассрочка квартальная"},
-en:{title:"Calculator",price:"Asset price",advance:"Advance (%)",term:"Term (months)",
+en:{title:"Calculator",full: "Total asset cost",price:"Asset price",advance:"Advance (%)",term:"Term (months)",
 type:"Schedule type",calc:"Calculate",client:"Client mode",pdf:"PDF / Print",
 lease:"Lease balance",adv:"Advance",over:"Overpayment",total:"Total payment",margin:"One-time commission",ins:"Insurance",
 m:"Month",p:"Payment",pr:"Principal",i:"Margin",b:"Balance",
@@ -235,7 +237,7 @@ t_annuity:"Annuity",t_annuity_q:"Quarterly annuity",t_decl2:"Declining 2x",t_dec
 t_linear:"Quarterly linear",t_inst_m:"Monthly installment",t_inst_q:"Quarterly installment"},
 uz:{title:"Kalkulyator",price:"Mol-mulk qiymati",advance:"Boshlang‘ich to‘lov (%)",term:"Muddati (oy)",
 type:"To‘lov jadvali",calc:"Hisoblash",client:"Mijoz rejimi",pdf:"PDF / Chop etish",
-lease:"Lizing qoldig‘i",adv:"Boshlang‘ich to‘lov",over:"Ortiqcha to‘lov",total:"Jami to‘lov",margin:"Bir martalik marja",ins:"Sug‘urta",
+lease:"Lizing qoldig‘i",full: "Obyektning to‘liq qiymati",adv:"Boshlang‘ich to‘lov",over:"Ortiqcha to‘lov",total:"Jami to‘lov",margin:"Bir martalik marja",ins:"Sug‘urta",
 m:"Oy",p:"To‘lov",pr:"Asosiy qarz",i:"Marja",b:"Qoldiq",
 t_annuity:"Annuitet",t_annuity_q:"Annuitet (choraklik)",t_decl2:"Kamayuvchi 2x",t_decl3:"Kamayuvchi 3x",
 t_linear:"Chiziqli (choraklik)",t_inst_m:"Oylik bo‘lib to‘lash",t_inst_q:"Choraklik bo‘lib to‘lash"}
@@ -380,6 +382,7 @@ outAdvance.textContent=f(adv);
 outOver.textContent=f(over);
 outTotal.textContent=f(lease+over);
 outMargin.textContent=f(margin);
+outFull.textContent = f(adv + lease + over + margin + insurance);
 outMarginPct.textContent=(MARGIN_RATE*100).toFixed(2).replace('.',',')+'%';
 outIns.textContent = f(insurance);
 outInsPct.textContent = (insRate * 100).toFixed(2).replace('.', ',') + '%';
