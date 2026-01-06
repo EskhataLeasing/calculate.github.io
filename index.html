@@ -58,6 +58,16 @@ tbody tr:nth-child(even){background:#fafafa}
 .client .client-btn,
 .client .lang-switch{display:none}
 .client .container{box-shadow:none}
+.client-actions{
+  display:none;
+  margin-bottom:20px;
+  width:100%;
+  text-align:right;
+}
+
+.client .client-actions{
+  display:block;
+}
 
 .footer{
   margin-top:30px;
@@ -88,6 +98,10 @@ tbody tr:nth-child(even){background:#fafafa}
     width: 210mm;
     height: 297mm;
     overflow: hidden;
+  }
+
+  .client-actions{
+    display:none !important;
   }
 
   body {
@@ -152,6 +166,11 @@ tbody tr:nth-child(even){background:#fafafa}
     <span data-lang="uz">UZ</span>
     <span data-lang="en">ENG</span>
   </div>
+</div>
+<div class="client-actions">
+  <button class="pdf-btn" onclick="window.print()" data-i18n="pdf">
+    PDF / Печать
+  </button>
 </div>
 
 <div class="calculator-section">
