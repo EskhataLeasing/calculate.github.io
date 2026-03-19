@@ -452,31 +452,62 @@ function calcLinear(amount,rate,term){
 }
 
 function calcDeclining(amount,rate,term,ratio){
-  // Annuity base then scale
-  const base=calcAnnuity(amount,rate,term);
-  if(!base.length)return base;
-  const avgPay=base._t.pay/term;
-  // firstPayment*ratio → lastPayment, arithmetic sequence
-  let firstPay=avgPay*2*ratio/(ratio+1);
-  let lastPay=firstPay/ratio;
-  const decr=term>1?(firstPay-lastPay)/(term-1):0;
+  // Точный порт VBA CalcDeclining_2x3x
+  let annuityPay;
+  if(Math.abs(rate)<1e-12){ annuityPay=amount/term; }
+  else{ const pv=(1+rate)**term; annuityPay=amount*(rate*pv)/(pv-1); }
 
+  let lastPay=2*annuityPay/(ratio+1);
+  let firstPay=ratio*lastPay;
+  let decr=term>1?(firstPay-lastPay)/(term-1):0;
+
+  // Итерационный подбор firstPay чтобы баланс закрылся в 0
+  let bestFirst=firstPay, bestErr=amount;
+  const tol=amount*0.000001;
+
+  for(let iter=0;iter<500;iter++){
+    let testBal=amount, valid=true;
+    for(let m=1;m<=term;m++){
+      const pay=firstPay-(m-1)*decr;
+      const intr=testBal*rate;
+      const princ=pay-intr;
+      if(princ<=0||intr<0){valid=false;break;}
+      testBal-=princ;
+    }
+    if(valid&&Math.abs(testBal)<Math.abs(bestErr)){
+      bestFirst=firstPay; bestErr=testBal;
+    }
+    if(valid&&Math.abs(testBal)<tol) break;
+    const adj=Math.abs(testBal)>amount*0.1?0.01:Math.abs(testBal)>amount*0.01?0.001:0.0001;
+    if(testBal>0) firstPay*=(1+adj); else firstPay*=(1-adj);
+    lastPay=firstPay/ratio;
+    if(term>1) decr=(firstPay-lastPay)/(term-1);
+  }
+
+  firstPay=bestFirst;
+  lastPay=firstPay/ratio;
+  decr=term>1?(firstPay-lastPay)/(term-1):0;
+
+  // Строим график — последний месяц всегда закрывает остаток
   const rows=[];
   let bal=amount,totP=0,totI=0,totT=0;
   for(let i=1;i<=term;i++){
     const intr=bal*rate;
     let pay=firstPay-(i-1)*decr;
-    let princ=pay-intr;
-    if(i===term){princ=bal;pay=princ+intr}
-    if(princ<0){princ=0;pay=intr}
-    bal=Math.max(0,bal-princ);
-    totP+=princ;totI+=intr;totT+=pay;
-    rows.push({n:i,pay,princ,intr,bal,show:true});
+    let princ,finalPay;
+    if(i===term){
+      princ=bal; finalPay=princ+intr; bal=0;
+    }else{
+      princ=Math.max(0,pay-intr);
+      bal=Math.max(0,bal-princ);
+      finalPay=princ+intr;
+    }
+    totP+=princ; totI+=intr; totT+=finalPay;
+    rows.push({n:i,pay:finalPay,princ,intr,bal,show:true});
   }
   rows._t={pay:totT,princ:totP,intr:totI};
   return rows;
 }
-
 function calcQuarterlyAnnuity(amount,rate,term){
   const monthly=calcAnnuity(amount,rate,term);
   const rows=[];
